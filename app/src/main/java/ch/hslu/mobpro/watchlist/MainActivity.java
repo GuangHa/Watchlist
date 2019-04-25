@@ -9,8 +9,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -26,6 +24,11 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import ch.hslu.mobpro.watchlist.fragment.DetailFragment;
+import ch.hslu.mobpro.watchlist.fragment.SearchFragment;
+import ch.hslu.mobpro.watchlist.fragment.SettingsFragment;
+import ch.hslu.mobpro.watchlist.fragment.WatchlistFragment;
 
 public class MainActivity extends AppCompatActivity {
 

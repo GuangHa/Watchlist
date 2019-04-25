@@ -1,4 +1,4 @@
-package ch.hslu.mobpro.watchlist;
+package ch.hslu.mobpro.watchlist.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +16,10 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import ch.hslu.mobpro.watchlist.model.Movie;
+import ch.hslu.mobpro.watchlist.repository.MovieRepository;
+import ch.hslu.mobpro.watchlist.R;
 
 public class DetailFragment extends Fragment {
     private MovieRepository movieRepository;

@@ -7,6 +7,8 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
+import ch.hslu.mobpro.watchlist.model.Movie;
+
 @Dao
 public interface MovieDao {
     @Query("SELECT * FROM movie")
@@ -17,6 +19,9 @@ public interface MovieDao {
 
     @Query("DELETE FROM movie")
     void deleteAll();
+
+    @Query("SELECT * FROM movie WHERE watchlist = 1")
+    List<Movie> getAllWatchlist();
 
     @Query("UPDATE movie SET watchlist = :value WHERE id = :id")
     void setWatchlist(int id, boolean value);

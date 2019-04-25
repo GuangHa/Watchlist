@@ -1,4 +1,4 @@
-package ch.hslu.mobpro.watchlist;
+package ch.hslu.mobpro.watchlist.model;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;

@@ -1,10 +1,12 @@
-package ch.hslu.mobpro.watchlist;
+package ch.hslu.mobpro.watchlist.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import ch.hslu.mobpro.watchlist.R;
 
 public class SearchFragment extends Fragment {
     @Override

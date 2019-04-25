@@ -1,14 +1,13 @@
-package ch.hslu.mobpro.watchlist;
+package ch.hslu.mobpro.watchlist.repository;
 
-import android.app.Application;
-import android.arch.lifecycle.LiveData;
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.android.volley.VolleyError;
-
 import java.util.List;
+
+import ch.hslu.mobpro.watchlist.MovieDao;
+import ch.hslu.mobpro.watchlist.database.AppDatabase;
+import ch.hslu.mobpro.watchlist.model.Movie;
 
 public class MovieRepository {
     private MovieDao movieDao;
@@ -19,6 +18,10 @@ public class MovieRepository {
         movieDatabase = AppDatabase.getDatabase(context);
         movieDao = movieDatabase.movieDao();
         allMovies = movieDao.getAll();
+    }
+
+    public List<Movie> getAllWatchlist() {
+        return movieDao.getAllWatchlist();
     }
 
     public void insertMovie(Movie movie) {
