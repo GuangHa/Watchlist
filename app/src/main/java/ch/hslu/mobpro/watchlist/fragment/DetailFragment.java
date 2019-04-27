@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -26,10 +27,11 @@ public class DetailFragment extends Fragment {
     private Movie movie;
     private Movie dbMovie;
 
-    public static DetailFragment newInstance(String string) {
+    public static DetailFragment newInstance(String string, Boolean isMovieObject) {
         DetailFragment detailFragment = new DetailFragment();
         Bundle args = new Bundle();
         args.putString("jsonObjectString", string);
+        args.putBoolean("isMovieObject", isMovieObject);
         detailFragment.setArguments(args);
         return detailFragment;
     }
@@ -38,9 +40,10 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         String jsonObjectString = getArguments().getString("jsonObjectString");
+        Boolean isMovieObject = getArguments().getBoolean("isMovieObject");
         try {
             JSONObject jsonObject = new JSONObject(jsonObjectString);
-            setUpMovie(jsonObject);
+            setUpMovie(jsonObject, isMovieObject, jsonObjectString);
         } catch (JSONException exception) {
             Log.e("Detail onCreateView: ", exception.getMessage());
         }
@@ -94,9 +97,14 @@ public class DetailFragment extends Fragment {
         // TODO: change layout to scrollview?
     }
 
-    private void setUpMovie(JSONObject jsonObject) {
+    private void setUpMovie(JSONObject jsonObject, Boolean isMovieObject, String jsonObjectString) {
         movieRepository = new MovieRepository(getContext());
-        setMovie(jsonObject);
+        if(!isMovieObject) {
+            setMovie(jsonObject);
+        } else {
+            Gson gson = new Gson();
+            this.movie = gson.fromJson(jsonObjectString, Movie.class);
+        }
         // INSERT MOVIE INTO DB IF ITS NOT ALREADY IN
         dbMovie = movieRepository.getMovieByTitle(movie.getTitle());
         if(dbMovie == null) {
@@ -104,6 +112,10 @@ public class DetailFragment extends Fragment {
         }
     }
 
+    /**
+     * Sets Movie-Object with content from json-Object
+     * @param jsonObject
+     */
     private void setMovie(JSONObject jsonObject) {
         movie = new Movie();
         try {

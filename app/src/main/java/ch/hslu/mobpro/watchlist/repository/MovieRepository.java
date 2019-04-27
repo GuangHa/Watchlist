@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 
 import java.util.List;
 
-import ch.hslu.mobpro.watchlist.MovieDao;
+import ch.hslu.mobpro.watchlist.interfaces.MovieDao;
 import ch.hslu.mobpro.watchlist.database.AppDatabase;
 import ch.hslu.mobpro.watchlist.model.Movie;
 

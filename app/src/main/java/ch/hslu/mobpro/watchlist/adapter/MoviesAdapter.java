@@ -14,12 +14,19 @@ import ch.hslu.mobpro.watchlist.R;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder>{
 
+    public interface OnItemClickListener {
+        void onItemClick(Movie item);
+    }
+
     private List<Movie> mMovies;
+    private OnItemClickListener listener;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public TextView nameTextView;
+        public TextView genreTextView;
+        public TextView runtimeTextView;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -28,11 +35,23 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             // to access the context from any ViewHolder instance.
             super(itemView);
             nameTextView = itemView.findViewById(R.id.movie_name);
+            genreTextView = itemView.findViewById(R.id.movie_genre);
+            runtimeTextView = itemView.findViewById(R.id.movie_runtime);
+        }
+
+        public void bind(final Movie item, final OnItemClickListener listener) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(item);
+                }
+            });
         }
     }
 
-    public MoviesAdapter(List<Movie> movies) {
+    public MoviesAdapter(List<Movie> movies, OnItemClickListener listener) {
         mMovies = movies;
+        this.listener = listener;
     }
 
     @Override
@@ -52,11 +71,18 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     @Override
     public void onBindViewHolder(MoviesAdapter.ViewHolder viewHolder, int position) {
         // Get the data model based on position
-        Movie contact = mMovies.get(position);
+        Movie movie = mMovies.get(position);
 
         // Set item views based on your views and data model
-        TextView textView = viewHolder.nameTextView;
-        textView.setText(contact.getTitle());
+        TextView nameTV = viewHolder.nameTextView;
+        nameTV.setText(movie.getTitle());
+
+        TextView genreTV = viewHolder.genreTextView;
+        genreTV.setText(movie.getGenre());
+
+        TextView runTimeTV = viewHolder.runtimeTextView;
+        runTimeTV.setText(movie.getRuntime());
+        viewHolder.bind(mMovies.get(position), listener);
     }
 
     // Returns the total count of items in the list

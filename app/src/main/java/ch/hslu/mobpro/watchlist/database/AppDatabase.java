@@ -5,7 +5,7 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
-import ch.hslu.mobpro.watchlist.MovieDao;
+import ch.hslu.mobpro.watchlist.interfaces.MovieDao;
 import ch.hslu.mobpro.watchlist.model.Movie;
 
 @Database(entities = {Movie.class}, version = 1, exportSchema = false)

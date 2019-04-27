@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, DetailFragment.newInstance(response.toString())).commit();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, DetailFragment.newInstance(response.toString(), false)).commit();
                 }
             }
         }, new Response.ErrorListener() {

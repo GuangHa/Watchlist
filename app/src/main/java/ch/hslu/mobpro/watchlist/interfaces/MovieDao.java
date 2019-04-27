@@ -1,4 +1,4 @@
-package ch.hslu.mobpro.watchlist;
+package ch.hslu.mobpro.watchlist.interfaces;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
