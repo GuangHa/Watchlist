@@ -5,7 +5,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -27,6 +30,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         public TextView nameTextView;
         public TextView genreTextView;
         public TextView runtimeTextView;
+        public ImageView posterImageView;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -37,6 +41,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             nameTextView = itemView.findViewById(R.id.movie_name);
             genreTextView = itemView.findViewById(R.id.movie_genre);
             runtimeTextView = itemView.findViewById(R.id.movie_runtime);
+            posterImageView = itemView.findViewById(R.id.tvIcon);
         }
 
         public void bind(final Movie item, final OnItemClickListener listener) {
@@ -82,6 +87,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
         TextView runTimeTV = viewHolder.runtimeTextView;
         runTimeTV.setText(movie.getRuntime());
+
+        ImageView posterTV = viewHolder.posterImageView;
+        Picasso.get().load(movie.getPoster()).into(posterTV);
+
         viewHolder.bind(mMovies.get(position), listener);
     }
 

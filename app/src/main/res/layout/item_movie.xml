@@ -7,16 +7,11 @@
     android:paddingBottom="10dp"
     android:background="@drawable/relative_layout_background">
 
-
-    <TextView
+    <ImageView
         android:id="@+id/tvIcon"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:text="A"
-        android:textColor="@android:color/white"
-        android:textSize="20sp" />
+        android:gravity="center" />
 
     <TextView
         android:id="@+id/movie_name"
