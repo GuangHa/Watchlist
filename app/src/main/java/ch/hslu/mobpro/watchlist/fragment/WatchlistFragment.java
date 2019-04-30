@@ -3,6 +3,7 @@ package ch.hslu.mobpro.watchlist.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +19,10 @@ import ch.hslu.mobpro.watchlist.adapter.MoviesAdapter;
 public class WatchlistFragment extends Fragment {
     private MovieRepository movieRepository;
     private List<Movie> movies;
+
+    public static WatchlistFragment newInstance() {
+        return new WatchlistFragment();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,7 +42,7 @@ public class WatchlistFragment extends Fragment {
                 Gson gson = new Gson();
                 String jsonString = gson.toJson(item);
                 FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.flContent, DetailFragment.newInstance(jsonString, true)).commit();
+                fragmentManager.beginTransaction().replace(R.id.detail_fragment_container, DetailFragment.newInstance(jsonString, true)).commit();
             }
         });
         rvMovies.setAdapter(adapter);

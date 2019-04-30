@@ -8,15 +8,15 @@ import android.view.ViewGroup;
 
 import ch.hslu.mobpro.watchlist.R;
 
-public class SettingsFragment extends Fragment {
+public class HomeFragment extends Fragment {
 
-    public static SettingsFragment newInstance() {
-        return new SettingsFragment();
+    public static HomeFragment newInstance() {
+        return new HomeFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.settings_view, container, false);
+        return inflater.inflate(R.layout.home_view, container, false);
     }
 }

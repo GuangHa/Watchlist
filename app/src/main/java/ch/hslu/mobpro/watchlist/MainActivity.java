@@ -5,10 +5,12 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -26,58 +28,65 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ch.hslu.mobpro.watchlist.fragment.DetailFragment;
+import ch.hslu.mobpro.watchlist.fragment.HomeFragment;
+import ch.hslu.mobpro.watchlist.fragment.MasterFragment;
 import ch.hslu.mobpro.watchlist.fragment.SearchFragment;
 import ch.hslu.mobpro.watchlist.fragment.SettingsFragment;
 import ch.hslu.mobpro.watchlist.fragment.WatchlistFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MasterFragment.Callbacks {
 
     private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
-    private Boolean isDrawerLocked = false;
+    private FragmentManager fragmentManager;
+
+    private static final String TAG_MASTER_FRAGMENT = "TAG_MASTER_FRAGMENT";
+    private static final String TAG_HOME_FRAGMENT = "TAG_HOME_FRAGMENT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        drawerLayout = findViewById(R.id.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,R.string.Open, R.string.Close);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if(drawerLayout != null) {
+            navigationView = (NavigationView) findViewById(R.id.master_fragment_container);
+            navigationView.getMenu().getItem(0).setChecked(true);
+            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    selectDrawerItem(item);
+                    return true;
+                }
+            });
 
-        /**
-         * LOCK DRAWER (NAVIGATION) IF TABLET SIZE
-         */
-        boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
-        if(tabletSize) {
-            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
-            drawerLayout.setScrimColor(0x00000000);
-            isDrawerLocked = true;
-            // TODO: ALLOW CONTENT TO BE FOCUSABLE?
-        }
-
-        if(!isDrawerLocked) {
-            drawerLayout.addDrawerListener(actionBarDrawerToggle);
-            actionBarDrawerToggle.syncState();
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
-        navigationView = findViewById(R.id.navigationView);
-        navigationView.getMenu().getItem(0).setChecked(true);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                selectDrawerItem(item);
-                return true;
+            final ActionBar actionBar = getSupportActionBar();
+            if(actionBar != null) {
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24px);
+                actionBar.setDisplayHomeAsUpEnabled(true);
             }
-        });
+            fragmentManager = getSupportFragmentManager();
+            HomeFragment homeFragment = HomeFragment.newInstance();
+            fragmentManager.beginTransaction().replace(R.id.detail_fragment_container, homeFragment).commit();
+        } else {
+            fragmentManager = getSupportFragmentManager();
+            MasterFragment masterFragment = MasterFragment.newInstance();
+            HomeFragment homeFragment = HomeFragment.newInstance();
+            fragmentManager.beginTransaction().add(R.id.master_fragment_container, masterFragment, TAG_MASTER_FRAGMENT).commit();
+            fragmentManager.beginTransaction().add(R.id.detail_fragment_container, homeFragment, TAG_HOME_FRAGMENT).commit();
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(actionBarDrawerToggle.onOptionsItemSelected(item))
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -88,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         switch(menuItem.getItemId())
         {
             case R.id.home:
-                fragmentClass = SearchFragment.class;
+                fragmentClass = HomeFragment.class;
                 break;
             case R.id.settings:
                 fragmentClass = SettingsFragment.class;
@@ -101,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 fragmentClass = WatchlistFragment.class;
                 break;
             default:
-                fragmentClass = WatchlistFragment.class;
+                fragmentClass = HomeFragment.class;
         }
 
         try {
@@ -114,8 +123,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.detail_fragment_container, fragment).commit();
 
         // Highlight the selected item has been done by NavigationView
         int size = navigationView.getMenu().size();
@@ -127,10 +135,7 @@ public class MainActivity extends AppCompatActivity {
         // Set action bar title
         setTitle(menuItem.getTitle());
 
-        // Close the navigation drawer
-        if(!isDrawerLocked) {
-            drawerLayout.closeDrawers();
-        }
+        drawerLayout.closeDrawers();
     }
 
     /**
@@ -155,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.flContent, DetailFragment.newInstance(response.toString(), false)).commit();
+                    fragmentManager.beginTransaction().replace(R.id.detail_fragment_container, DetailFragment.newInstance(response.toString(), false)).commit();
                 }
             }
         }, new Response.ErrorListener() {
@@ -171,5 +176,32 @@ public class MainActivity extends AppCompatActivity {
          */
         InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    @Override
+    public void onMasterItemClicked(int masterItemId) {
+        Fragment fragment = null;
+        Class fragmentClass;
+        switch(masterItemId) {
+            case 2:
+                fragmentClass = SearchFragment.class;
+                break;
+            case 3:
+                fragmentClass = WatchlistFragment.class;
+                break;
+            case 4:
+                fragmentClass = SettingsFragment.class;
+                break;
+            default:
+                fragmentClass = HomeFragment.class;
+                break;
+        }
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        fragmentManager.beginTransaction().replace(R.id.detail_fragment_container, fragment).commit();
+
     }
 }
