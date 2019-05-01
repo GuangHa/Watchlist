@@ -24,6 +24,10 @@ public class MovieRepository {
         return movieDao.getAllWatchlist();
     }
 
+    public List<Movie> getAllCinemaMoviesByYear(String year) {
+        return movieDao.getAllCinemaMoviesByYear(year);
+    }
+
     public void insertMovie(Movie movie) {
         new insertAsyncTask(movieDao).execute(movie);
     }

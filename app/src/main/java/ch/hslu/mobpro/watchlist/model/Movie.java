@@ -59,6 +59,8 @@ public class Movie implements Serializable {
     private String website;
     @ColumnInfo(name = "watchlist")
     private Boolean isWatchlist;
+    @ColumnInfo(name = "isCinema")
+    private Boolean isCinema;
 
     public void setId(int id) {
         this.id = id;
@@ -256,7 +258,15 @@ public class Movie implements Serializable {
         return isWatchlist;
     }
 
+    public Boolean getIsCinema() {
+        return isCinema;
+    }
+
     public void setWatchlist(Boolean watchlist) {
         isWatchlist = watchlist;
+    }
+
+    public void setIsCinema(Boolean isCinema) {
+        this.isCinema = isCinema;
     }
 }

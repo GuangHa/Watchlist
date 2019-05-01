@@ -23,6 +23,9 @@ public interface MovieDao {
     @Query("SELECT * FROM movie WHERE watchlist = 1")
     List<Movie> getAllWatchlist();
 
+    @Query("SELECT * FROM movie WHERE isCinema = 1 AND year = :year")
+    List<Movie> getAllCinemaMoviesByYear(String year);
+
     @Query("UPDATE movie SET watchlist = :value WHERE id = :id")
     void setWatchlist(int id, boolean value);
 

@@ -1,6 +1,7 @@
 package ch.hslu.mobpro.watchlist;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -23,9 +25,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
+import java.util.InputMismatchException;
 
 import ch.hslu.mobpro.watchlist.fragment.DetailFragment;
 import ch.hslu.mobpro.watchlist.fragment.HomeFragment;
@@ -33,12 +43,15 @@ import ch.hslu.mobpro.watchlist.fragment.MasterFragment;
 import ch.hslu.mobpro.watchlist.fragment.SearchFragment;
 import ch.hslu.mobpro.watchlist.fragment.SettingsFragment;
 import ch.hslu.mobpro.watchlist.fragment.WatchlistFragment;
+import ch.hslu.mobpro.watchlist.model.Movie;
+import ch.hslu.mobpro.watchlist.repository.MovieRepository;
 
 public class MainActivity extends AppCompatActivity implements MasterFragment.Callbacks {
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private FragmentManager fragmentManager;
+    private MovieRepository movieRepository;
 
     private static final String TAG_MASTER_FRAGMENT = "TAG_MASTER_FRAGMENT";
     private static final String TAG_HOME_FRAGMENT = "TAG_HOME_FRAGMENT";
@@ -47,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements MasterFragment.Ca
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        insertCinemaMovies();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -203,5 +218,104 @@ public class MainActivity extends AppCompatActivity implements MasterFragment.Ca
         }
         fragmentManager.beginTransaction().replace(R.id.detail_fragment_container, fragment).commit();
 
+    }
+
+    public void insertCinemaMovies() {
+        movieRepository = new MovieRepository(getApplicationContext());
+        AssetManager am = getAssets();
+        try {
+            InputStream is = am.open("2019.json");
+            BufferedReader r = new BufferedReader(new InputStreamReader(is));
+            for(String line; (line = r.readLine()) != null; ) {
+                JSONObject jsonObject = new JSONObject(line);
+                setMovie(jsonObject);
+            }
+        } catch(IOException | JSONException exception) {
+            Log.d("inserting cinema movies", exception.getMessage());
+        }
+    }
+
+    private void setMovie(JSONObject jsonObject) {
+        Movie movie = new Movie();
+        try {
+            if (jsonObject.has("Title")) {
+                movie.setTitle(jsonObject.getString("Title"));
+            }
+            if (jsonObject.has("Year")) {
+                movie.setYear(jsonObject.getString("Year"));
+            }
+            if (jsonObject.has("Rated")) {
+                movie.setRated(jsonObject.getString("Rated"));
+            }
+            if (jsonObject.has("Released")) {
+                movie.setReleased(jsonObject.getString("Released"));
+            }
+            if (jsonObject.has("Runtime")) {
+                movie.setRuntime(jsonObject.getString("Runtime"));
+            }
+            if (jsonObject.has("Genre")) {
+                movie.setGenre(jsonObject.getString("Genre"));
+            }
+            if (jsonObject.has("Director")) {
+                movie.setDirector(jsonObject.getString("Director"));
+            }
+            if (jsonObject.has("Writer")) {
+                movie.setWriter(jsonObject.getString("Writer"));
+            }
+            if (jsonObject.has("Actors")) {
+                movie.setActors(jsonObject.getString("Actors"));
+            }
+            if (jsonObject.has("Plot")) {
+                movie.setPlot(jsonObject.getString("Plot"));
+            }
+            if (jsonObject.has("Language")) {
+                movie.setLanguage(jsonObject.getString("Language"));
+            }
+            if (jsonObject.has("Country")) {
+                movie.setCountry(jsonObject.getString("Country"));
+            }
+            if (jsonObject.has("Awards")) {
+                movie.setAwards(jsonObject.getString("Awards"));
+            }
+            if (jsonObject.has("Poster")) {
+                movie.setPoster(jsonObject.getString("Poster"));
+            }
+            if (jsonObject.has("Metascore")) {
+                movie.setMetascore(jsonObject.getString("Metascore"));
+            }
+            if (jsonObject.has("imdbRating")) {
+                movie.setImdbRating(jsonObject.getString("imdbRating"));
+            }
+            if (jsonObject.has("imdbVotes")) {
+                movie.setImdbVotes(jsonObject.getString("imdbVotes"));
+            }
+            if (jsonObject.has("Type")) {
+                movie.setType(jsonObject.getString("Type"));
+            }
+            if (jsonObject.has("DVD")) {
+                movie.setDvd(jsonObject.getString("DVD"));
+            }
+            if (jsonObject.has("BoxOffice")) {
+                movie.setBoxOffice(jsonObject.getString("BoxOffice"));
+            }
+            if (jsonObject.has("Production")) {
+                movie.setProduction(jsonObject.getString("Production"));
+            }
+            if (jsonObject.has("Website")) {
+                movie.setWebsite(jsonObject.getString("Website"));
+            }
+            if (jsonObject.has("totalSeasons")) {
+                movie.setTotalSeasons(jsonObject.getString("totalSeasons"));
+            }
+            movie.setWatchlist(false);
+            // currently set every movie as non cinema movie
+            movie.setIsCinema(true);
+            Movie dbMovie = movieRepository.getMovieByTitle(movie.getTitle());
+            if(dbMovie == null) {
+                movieRepository.insertMovie(movie);
+            }
+        } catch (JSONException exception) {
+            Log.e("Detail setMovie: ", exception.getMessage());
+        }
     }
 }

@@ -189,6 +189,8 @@ public class DetailFragment extends Fragment {
                 movie.setTotalSeasons(jsonObject.getString("totalSeasons"));
             }
             movie.setWatchlist(false);
+            // currently set every movie as non cinema movie
+            movie.setIsCinema(false);
         } catch (JSONException exception) {
             Log.e("Detail setMovie: ", exception.getMessage());
         }
