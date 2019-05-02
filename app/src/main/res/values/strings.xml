@@ -2,4 +2,6 @@
     <string name="app_name">Watchlist</string>
     <string name="Close">Close</string>
     <string name="Open">Open</string>
+    <string name="switch_title">Receive Recommendation</string>
+    <string name="switch_summary">Receive Push-Notification</string>
 </resources>

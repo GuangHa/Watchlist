@@ -1,11 +1,19 @@
 package ch.hslu.mobpro.watchlist;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -34,8 +42,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
-import java.util.InputMismatchException;
 
 import ch.hslu.mobpro.watchlist.fragment.DetailFragment;
 import ch.hslu.mobpro.watchlist.fragment.HomeFragment;
@@ -52,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements MasterFragment.Ca
     private NavigationView navigationView;
     private FragmentManager fragmentManager;
     private MovieRepository movieRepository;
+    private String jsonString;
+    static int notificationCount = 0;
 
     private static final String TAG_MASTER_FRAGMENT = "TAG_MASTER_FRAGMENT";
     private static final String TAG_HOME_FRAGMENT = "TAG_HOME_FRAGMENT";
@@ -61,7 +69,15 @@ public class MainActivity extends AppCompatActivity implements MasterFragment.Ca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        insertCinemaMovies();
+        String movieTitle = getIntent().getStringExtra("MovieTitle");
+        movieRepository = new MovieRepository(getApplicationContext());
+        if(movieTitle != null) {
+            Movie item = movieRepository.getMovieByTitle(movieTitle);
+            Gson gson = new Gson();
+            jsonString = gson.toJson(item);
+        } else {
+            insertCinemaMovies();
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -85,13 +101,30 @@ public class MainActivity extends AppCompatActivity implements MasterFragment.Ca
             }
             fragmentManager = getSupportFragmentManager();
             HomeFragment homeFragment = HomeFragment.newInstance();
-            fragmentManager.beginTransaction().replace(R.id.detail_fragment_container, homeFragment).commit();
+            if(movieTitle != null) {
+                fragmentManager.beginTransaction().replace(R.id.detail_fragment_container, DetailFragment.newInstance(jsonString, true)).commit();
+            } else {
+                fragmentManager.beginTransaction().replace(R.id.detail_fragment_container, homeFragment).commit();
+            }
         } else {
             fragmentManager = getSupportFragmentManager();
             MasterFragment masterFragment = MasterFragment.newInstance();
             HomeFragment homeFragment = HomeFragment.newInstance();
             fragmentManager.beginTransaction().add(R.id.master_fragment_container, masterFragment, TAG_MASTER_FRAGMENT).commit();
-            fragmentManager.beginTransaction().add(R.id.detail_fragment_container, homeFragment, TAG_HOME_FRAGMENT).commit();
+            if(movieTitle != null) {
+                fragmentManager.beginTransaction().replace(R.id.detail_fragment_container, DetailFragment.newInstance(jsonString, true)).commit();
+            } else {
+                fragmentManager.beginTransaction().add(R.id.detail_fragment_container, homeFragment, TAG_HOME_FRAGMENT).commit();
+            }
+        }
+
+        if(movieTitle == null) {
+            android.support.v7.preference.PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+            SharedPreferences sharedPref = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
+            Boolean switchPref = sharedPref.getBoolean("recommendation_switch", false);
+            if (switchPref) {
+                createPushNotification();
+            }
         }
     }
 
@@ -221,10 +254,9 @@ public class MainActivity extends AppCompatActivity implements MasterFragment.Ca
     }
 
     public void insertCinemaMovies() {
-        movieRepository = new MovieRepository(getApplicationContext());
         AssetManager am = getAssets();
         try {
-            InputStream is = am.open("2019.json");
+            InputStream is = am.open("2019.txt");
             BufferedReader r = new BufferedReader(new InputStreamReader(is));
             for(String line; (line = r.readLine()) != null; ) {
                 JSONObject jsonObject = new JSONObject(line);
@@ -318,4 +350,50 @@ public class MainActivity extends AppCompatActivity implements MasterFragment.Ca
             Log.e("Detail setMovie: ", exception.getMessage());
         }
     }
+
+    private void createPushNotification() {
+        createNotificationChannel();
+
+        // GETS RANDOM MOVIE FROM DATABASE
+        Movie randomMovie = movieRepository.getRandomCinemaMovie("2019");
+
+        int requestID = (int) System.currentTimeMillis();
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.putExtra("MovieTitle", randomMovie.getTitle());
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, requestID, notificationIntent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "some_channel_id")
+                .setSmallIcon(R.drawable.ic_baseline_tv_24px) // TODO: CHANGE NOTIFICATION ICON
+                .setContentTitle(randomMovie.getTitle())
+                .setContentText(randomMovie.getGenre())
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(randomMovie.getGenre()))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(notificationCount++, builder.build());
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Some Channel";
+            String channelId = "some_channel_id";
+            //String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+            //channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
 }

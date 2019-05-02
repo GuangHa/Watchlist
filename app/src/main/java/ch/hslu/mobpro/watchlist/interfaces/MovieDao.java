@@ -26,6 +26,9 @@ public interface MovieDao {
     @Query("SELECT * FROM movie WHERE isCinema = 1 AND year = :year")
     List<Movie> getAllCinemaMoviesByYear(String year);
 
+    @Query("SELECT * FROM movie WHERE isCinema = 1 AND year = :year ORDER BY RANDOM() LIMIT 1")
+    Movie getRandomCinemaMovie(String year);
+
     @Query("UPDATE movie SET watchlist = :value WHERE id = :id")
     void setWatchlist(int id, boolean value);
 

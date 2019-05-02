@@ -28,6 +28,10 @@ public class MovieRepository {
         return movieDao.getAllCinemaMoviesByYear(year);
     }
 
+    public Movie getRandomCinemaMovie(String year) {
+        return movieDao.getRandomCinemaMovie(year);
+    }
+
     public void insertMovie(Movie movie) {
         new insertAsyncTask(movieDao).execute(movie);
     }
