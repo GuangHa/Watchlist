@@ -58,11 +58,13 @@ public class DetailFragment extends Fragment {
                     movieRepository.setWatchlist(dbMovie, true);
                     Button addAndRemoveFromListButton = getView().findViewById(R.id.addAndRemoveFromListButton);
                     addAndRemoveFromListButton.setText("REMOVE FROM WATCHLIST");
+                    addAndRemoveFromListButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_remove_24px, 0, 0, 0);
                     Toast.makeText(getContext(), "Added to the list!", Toast.LENGTH_LONG).show();
                 } else {
                     movieRepository.setWatchlist(dbMovie, false);
                     Button addAndRemoveFromListButton = getView().findViewById(R.id.addAndRemoveFromListButton);
                     addAndRemoveFromListButton.setText("ADD TO WATCHLIST");
+                    addAndRemoveFromListButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_add_24px, 0, 0, 0);
                     Toast.makeText(getContext(), "Removed from the list!", Toast.LENGTH_LONG).show();
                 }
             }
