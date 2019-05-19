@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/master_fragment_border">
+
+    <!-- Replace this simple list with recyclerview or however you
+        want to generate your master list -->
+
+    <TextView
+        android:id="@+id/master_item_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:drawableLeft="@drawable/ic_baseline_home_24px"
+        android:drawablePadding="10dp"
+        android:text="Home"/>
+
+    <TextView
+        android:id="@+id/master_item_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:drawableLeft="@drawable/ic_baseline_search_24px"
+        android:drawablePadding="10dp"
+        android:text="Search"/>
+
+    <TextView
+        android:id="@+id/master_item_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:drawableLeft="@drawable/ic_baseline_list_alt_24px"
+        android:drawablePadding="10dp"
+        android:text="Watchlist"/>
+
+    <TextView
+        android:id="@+id/master_item_4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:drawableLeft="@drawable/ic_baseline_settings_20px"
+        android:drawablePadding="10dp"
+        android:text="Settings"/>
+
+</LinearLayout>
