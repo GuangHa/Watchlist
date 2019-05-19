@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements MasterFragment.Ca
         PendingIntent pendingIntent = PendingIntent.getActivity(this, requestID, notificationIntent, 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "some_channel_id")
-                .setSmallIcon(R.drawable.ic_baseline_tv_24px) // TODO: CHANGE NOTIFICATION ICON
+                .setSmallIcon(R.drawable.ic_baseline_tv_24px)
                 .setContentTitle(randomMovie.getTitle())
                 .setContentText(randomMovie.getGenre())
                 .setStyle(new NotificationCompat.BigTextStyle()
