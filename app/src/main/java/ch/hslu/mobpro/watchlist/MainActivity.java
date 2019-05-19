@@ -193,7 +193,8 @@ public class MainActivity extends AppCompatActivity implements MasterFragment.Ca
     public void search(View view) {
         final EditText editText = findViewById(R.id.searchEditText);
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://www.omdbapi.com/?apikey=49284ee8&plot=short&r=json&t="+editText.getText().toString();
+        // TODO: INPUT YOUR API KEY HERE
+        String url = "http://www.omdbapi.com/?apikey=YOURAPIKEY&plot=short&r=json&t="+editText.getText().toString();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject response) {
